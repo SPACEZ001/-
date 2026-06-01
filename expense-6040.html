@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>💙 โครงการ 60/40 · บันทึกค่าใช้จ่าย</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue-50: #eff6ff;
+    --blue-100: #dbeafe;
+    --blue-200: #bfdbfe;
+    --blue-400: #60a5fa;
+    --blue-500: #3b82f6;
+    --blue-600: #2563eb;
+    --blue-700: #1d4ed8;
+    --rose-50: #fff1f2;
+    --rose-100: #ffe4e6;
+    --rose-200: #fecdd3;
+    --rose-400: #fb7185;
+    --rose-500: #f43f5e;
+    --rose-600: #e11d48;
+    --green-50: #f0fdf4;
+    --green-400: #4ade80;
+    --green-500: #22c55e;
+    --amber-50: #fffbeb;
+    --amber-400: #fbbf24;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --gray-900: #111827;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow: 0 4px 16px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.04);
+    --shadow-lg: 0 10px 40px rgba(0,0,0,0.10), 0 4px 12px rgba(0,0,0,0.06);
+    --radius: 16px;
+    --radius-sm: 10px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Sarabun', 'Noto Sans Thai', sans-serif;
+    background: #f0f4fb;
+    background-image: 
+      radial-gradient(ellipse at 20% 0%, rgba(59,130,246,0.08) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 100%, rgba(244,63,94,0.06) 0%, transparent 60%);
+    min-height: 100vh;
+    color: var(--gray-800);
+    padding: 0 0 60px;
+  }
+
+  /* ── Header ── */
+  .app-header {
+    background: white;
+    border-bottom: 1px solid var(--gray-200);
+    padding: 18px 20px 16px;
+    text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(59,130,246,0.08);
+  }
+  .app-header h1 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--blue-600);
+    letter-spacing: -0.3px;
+  }
+  .app-header p {
+    font-size: 0.78rem;
+    color: var(--gray-500);
+    margin-top: 2px;
+  }
+  .mode-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--blue-50);
+    color: var(--blue-600);
+    border: 1px solid var(--blue-200);
+    border-radius: 20px;
+    padding: 3px 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-top: 6px;
+  }
+
+  .container { max-width: 540px; margin: 0 auto; padding: 20px 16px; }
+
+  /* ── Mode Switch ── */
+  .mode-switch {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 24px;
+  }
+  .mode-btn {
+    padding: 12px;
+    border: 2px solid var(--gray-200);
+    background: white;
+    border-radius: var(--radius-sm);
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    color: var(--gray-500);
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+  .mode-btn.active-solo {
+    border-color: var(--blue-500);
+    background: var(--blue-50);
+    color: var(--blue-700);
+  }
+  .mode-btn.active-couple {
+    border-color: var(--rose-400);
+    background: var(--rose-50);
+    color: var(--rose-600);
+  }
+
+  /* ── Card ── */
+  .card {
+    background: white;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 20px;
+    margin-bottom: 16px;
+    border: 1px solid var(--gray-100);
+  }
+  .card-title {
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--gray-400);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* ── Person Block ── */
+  .person-block {
+    border-radius: var(--radius-sm);
+    padding: 14px;
+    margin-bottom: 10px;
+  }
+  .person-block.me { background: var(--blue-50); border: 1px solid var(--blue-100); }
+  .person-block.partner { background: var(--rose-50); border: 1px solid var(--rose-100); }
+
+  .person-label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .person-block.me .person-label { color: var(--blue-700); }
+  .person-block.partner .person-label { color: var(--rose-600); }
+
+  .input-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .input-group label {
+    display: block;
+    font-size: 0.72rem;
+    color: var(--gray-500);
+    margin-bottom: 4px;
+    font-weight: 500;
+  }
+  .input-group input {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--gray-800);
+    background: white;
+    transition: border-color 0.15s;
+    outline: none;
+  }
+  .input-group input:focus { border-color: var(--blue-400); }
+  .person-block.partner .input-group input:focus { border-color: var(--rose-400); }
+
+  /* ── Dashboard Stats ── */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .stat-box {
+    border-radius: var(--radius-sm);
+    padding: 13px 14px;
+    position: relative;
+    overflow: hidden;
+  }
+  .stat-box.blue { background: linear-gradient(135deg, var(--blue-500), var(--blue-600)); color: white; }
+  .stat-box.blue-soft { background: var(--blue-50); border: 1px solid var(--blue-100); color: var(--blue-700); }
+  .stat-box.rose { background: linear-gradient(135deg, var(--rose-500), var(--rose-600)); color: white; }
+  .stat-box.rose-soft { background: var(--rose-50); border: 1px solid var(--rose-100); color: var(--rose-600); }
+  .stat-box.green { background: linear-gradient(135deg, #059669, #10b981); color: white; }
+  .stat-box.green-soft { background: var(--green-50); border: 1px solid #bbf7d0; color: #065f46; }
+  .stat-box.amber { background: var(--amber-50); border: 1px solid #fde68a; color: #92400e; }
+  .stat-box.full { grid-column: 1 / -1; }
+
+  .stat-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    opacity: 0.8;
+    margin-bottom: 4px;
+    letter-spacing: 0.3px;
+  }
+  .stat-value {
+    font-size: 1.3rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    line-height: 1.1;
+  }
+  .stat-sub {
+    font-size: 0.68rem;
+    opacity: 0.7;
+    margin-top: 3px;
+  }
+  .stat-box.white-text { color: white; }
+  .stat-box.white-text .stat-label { opacity: 0.85; }
+  .stat-box.white-text .stat-sub { opacity: 0.75; }
+
+  .person-section-title {
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 8px 0 6px;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    border-bottom: 1.5px dashed var(--gray-200);
+    margin-bottom: 10px;
+  }
+  .person-section-title.blue { color: var(--blue-600); border-color: var(--blue-100); }
+  .person-section-title.rose { color: var(--rose-500); border-color: var(--rose-100); }
+
+  .divider {
+    height: 1px;
+    background: var(--gray-100);
+    margin: 14px 0;
+  }
+
+  /* ── Max Purchase Highlight ── */
+  .max-purchase {
+    background: linear-gradient(135deg, #1e40af, #3b82f6);
+    border-radius: var(--radius-sm);
+    padding: 16px;
+    color: white;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+  .max-purchase .label { font-size: 0.75rem; opacity: 0.85; margin-bottom: 4px; font-weight: 600; }
+  .max-purchase .value { font-size: 1.8rem; font-weight: 800; letter-spacing: -1px; }
+  .max-purchase .sub { font-size: 0.7rem; opacity: 0.75; margin-top: 4px; }
+
+  /* ── Expense Form ── */
+  .expense-form { display: flex; flex-direction: column; gap: 10px; }
+  .expense-form .form-row { display: grid; grid-template-columns: 1fr auto; gap: 8px; }
+  .expense-form input[type="text"],
+  .expense-form input[type="number"],
+  .expense-form select {
+    padding: 11px 13px;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--gray-800);
+    background: white;
+    outline: none;
+    transition: border-color 0.15s;
+    width: 100%;
+  }
+  .expense-form input:focus, .expense-form select:focus { border-color: var(--blue-400); }
+
+  .btn-add {
+    padding: 11px 18px;
+    background: var(--blue-500);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+    white-space: nowrap;
+  }
+  .btn-add:active { background: var(--blue-700); transform: scale(0.97); }
+
+  .split-select {
+    background: var(--gray-50);
+    color: var(--gray-700) !important;
+    font-size: 0.82rem !important;
+  }
+
+  /* ── Expense List ── */
+  .expense-list { display: flex; flex-direction: column; gap: 8px; }
+  .expense-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 14px;
+    background: var(--gray-50);
+    border-radius: 10px;
+    border: 1px solid var(--gray-100);
+    animation: fadeSlide 0.25s ease;
+  }
+  @keyframes fadeSlide {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .expense-item .ei-icon { font-size: 1.1rem; flex-shrink: 0; }
+  .expense-item .ei-info { flex: 1; min-width: 0; }
+  .expense-item .ei-name { font-size: 0.85rem; font-weight: 600; color: var(--gray-800); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .expense-item .ei-meta { font-size: 0.7rem; color: var(--gray-400); margin-top: 1px; }
+  .expense-item .ei-price { font-size: 0.95rem; font-weight: 700; color: var(--gray-700); white-space: nowrap; }
+  .expense-item .ei-split { font-size: 0.68rem; color: var(--gray-400); text-align: right; }
+  .btn-del {
+    background: none; border: none; cursor: pointer;
+    color: var(--gray-300); font-size: 1rem; padding: 2px;
+    transition: color 0.15s;
+    flex-shrink: 0;
+  }
+  .btn-del:hover { color: var(--rose-400); }
+
+  .expense-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0 0;
+    border-top: 1.5px solid var(--gray-200);
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--gray-700);
+  }
+  .expense-total span:last-child { color: var(--blue-600); }
+
+  .empty-state {
+    text-align: center;
+    padding: 20px;
+    color: var(--gray-400);
+    font-size: 0.82rem;
+  }
+
+  /* ── Warning ── */
+  .warning-box {
+    background: #fff7ed;
+    border: 1.5px solid #fed7aa;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 0.78rem;
+    color: #9a3412;
+    display: flex;
+    gap: 6px;
+    align-items: flex-start;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+  .badge-blue { background: var(--blue-100); color: var(--blue-700); }
+  .badge-rose { background: var(--rose-100); color: var(--rose-600); }
+  .badge-green { background: var(--green-50); color: #065f46; border: 1px solid #bbf7d0; }
+
+  /* ── Responsive ── */
+  @media (max-width: 360px) {
+    .stat-value { font-size: 1.1rem; }
+    .max-purchase .value { font-size: 1.5rem; }
+    .input-row { grid-template-columns: 1fr; }
+  }
+
+  .hidden { display: none !important; }
+
+  /* ── Reset button ── */
+  .btn-reset {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    background: var(--gray-100);
+    border: 1.5px solid var(--gray-200);
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--gray-500);
+    cursor: pointer;
+    transition: all 0.15s;
+    margin-top: 4px;
+  }
+  .btn-reset:hover { background: var(--gray-200); color: var(--gray-700); }
+</style>
+</head>
+<body>
+
+<div class="app-header">
+  <h1>💙 โครงการรัฐ 60/40</h1>
+  <p>คำนวณค่าใช้จ่ายและยอดคงเหลือแบบ Real-time</p>
+  <div class="mode-badge" id="modeBadge">👤 โหมดคนเดียว</div>
+</div>
+
+<div class="container">
+
+  <!-- Mode Switch -->
+  <div class="mode-switch">
+    <button class="mode-btn active-solo" id="btnSolo" onclick="setMode('solo')">👤 ใช้คนเดียว</button>
+    <button class="mode-btn" id="btnCouple" onclick="setMode('couple')">👥 ใช้กับแฟน</button>
+  </div>
+
+  <!-- Initial Balance Input -->
+  <div class="card">
+    <div class="card-title">💰 ยอดคงเหลือตั้งต้น</div>
+
+    <div class="person-block me">
+      <div class="person-label">💙 ฉัน</div>
+      <div class="input-row">
+        <div class="input-group">
+          <label>ยอดโครงการคงเหลือ (฿)</label>
+          <input type="number" id="myProject" placeholder="0" value="" oninput="recalculate()">
+        </div>
+        <div class="input-group">
+          <label>เงินในบัญชีคงเหลือ (฿)</label>
+          <input type="number" id="myCash" placeholder="0" value="" oninput="recalculate()">
+        </div>
+      </div>
+    </div>
+
+    <div class="person-block partner hidden" id="partnerBlock">
+      <div class="person-label">🌸 แฟน</div>
+      <div class="input-row">
+        <div class="input-group">
+          <label>ยอดโครงการคงเหลือ (฿)</label>
+          <input type="number" id="partnerProject" placeholder="0" value="" oninput="recalculate()">
+        </div>
+        <div class="input-group">
+          <label>เงินในบัญชีคงเหลือ (฿)</label>
+          <input type="number" id="partnerCash" placeholder="0" value="" oninput="recalculate()">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dashboard -->
+  <div class="card">
+    <div class="card-title">📊 แดชบอร์ดสรุปยอด</div>
+
+    <!-- Solo Dashboard -->
+    <div id="soloDash">
+      <div class="max-purchase">
+        <div class="label">🛒 ยอดซื้อสูงสุดที่ล้างโครงการได้พอดี</div>
+        <div class="value" id="soloMaxPurchase">฿0</div>
+        <div class="sub">โครงการออก 60% · ฉันสมทบ 40%</div>
+      </div>
+      <div class="stat-grid">
+        <div class="stat-box blue">
+          <div class="stat-label">📦 โครงการคงเหลือ</div>
+          <div class="stat-value" id="soloProjectLeft">฿0</div>
+          <div class="stat-sub">ออกให้ 60%</div>
+        </div>
+        <div class="stat-box blue-soft">
+          <div class="stat-label">💵 เงินสดคงเหลือ</div>
+          <div class="stat-value" id="soloCashLeft">฿0</div>
+          <div class="stat-sub">สมทบ 40%</div>
+        </div>
+        <div class="stat-box green full">
+          <div class="stat-label">🧾 ยอดใช้จ่ายรวมทั้งหมด</div>
+          <div class="stat-value" id="soloTotalSpent">฿0</div>
+          <div class="stat-sub">รวมทุกรายการที่บันทึก</div>
+        </div>
+      </div>
+      <div class="warning-box hidden" id="soloWarning">
+        ⚠️ <span id="soloWarningText"></span>
+      </div>
+    </div>
+
+    <!-- Couple Dashboard -->
+    <div id="coupleDash" class="hidden">
+      <div class="person-section-title blue">💙 ฉัน</div>
+      <div class="stat-grid">
+        <div class="stat-box blue">
+          <div class="stat-label">📦 โครงการคงเหลือ</div>
+          <div class="stat-value" id="myProjectLeft">฿0</div>
+          <div class="stat-sub">ออกให้ 60%</div>
+        </div>
+        <div class="stat-box blue-soft">
+          <div class="stat-label">💵 เงินสดคงเหลือ</div>
+          <div class="stat-value" id="myCashLeft">฿0</div>
+          <div class="stat-sub">สมทบ 40%</div>
+        </div>
+        <div class="stat-box amber full">
+          <div class="stat-label">🛒 ซื้อสูงสุดเพื่อล้างโครงการของฉัน</div>
+          <div class="stat-value" id="myMaxPurchase">฿0</div>
+          <div class="stat-sub">เฉพาะส่วนของฉัน</div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="person-section-title rose">🌸 แฟน</div>
+      <div class="stat-grid">
+        <div class="stat-box rose">
+          <div class="stat-label">📦 โครงการคงเหลือ</div>
+          <div class="stat-value" id="partnerProjectLeft">฿0</div>
+          <div class="stat-sub">ออกให้ 60%</div>
+        </div>
+        <div class="stat-box rose-soft">
+          <div class="stat-label">💵 เงินสดคงเหลือ</div>
+          <div class="stat-value" id="partnerCashLeft">฿0</div>
+          <div class="stat-sub">สมทบ 40%</div>
+        </div>
+        <div class="stat-box amber full">
+          <div class="stat-label">🛒 ซื้อสูงสุดเพื่อล้างโครงการแฟน</div>
+          <div class="stat-value" id="partnerMaxPurchase">฿0</div>
+          <div class="stat-sub">เฉพาะส่วนของแฟน</div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="stat-grid">
+        <div class="stat-box green full">
+          <div class="stat-label">🧾 ยอดใช้จ่ายรวมทั้งหมด</div>
+          <div class="stat-value" id="coupleTotalSpent">฿0</div>
+          <div class="stat-sub">รวมทุกรายการที่บันทึก</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Expense Tracker -->
+  <div class="card">
+    <div class="card-title">📝 บันทึกรายการซื้อ</div>
+
+    <div class="expense-form">
+      <div class="form-row">
+        <input type="text" id="itemName" placeholder="ชื่อสินค้า / รายการ" />
+      </div>
+      <div class="form-row">
+        <input type="number" id="itemPrice" placeholder="ราคา (฿)" min="0" />
+        <button class="btn-add" onclick="addItem()">+ เพิ่ม</button>
+      </div>
+      <select class="split-select hidden" id="splitType">
+        <option value="half">💑 หารครึ่ง 50/50</option>
+        <option value="me">💙 ฉันจ่ายเต็ม</option>
+        <option value="partner">🌸 แฟนจ่ายเต็ม</option>
+      </select>
+    </div>
+
+    <div style="margin-top:16px;">
+      <div class="expense-list" id="expenseList">
+        <div class="empty-state">🛍️ ยังไม่มีรายการ<br>เพิ่มสินค้าด้านบนได้เลย</div>
+      </div>
+      <div class="expense-total hidden" id="expenseTotal">
+        <span>รวมทั้งหมด</span>
+        <span id="totalAmountDisplay">฿0</span>
+      </div>
+    </div>
+  </div>
+
+  <button class="btn-reset" onclick="resetAll()">🔄 เริ่มต้นใหม่ / ล้างข้อมูลทั้งหมด</button>
+
+</div><!-- /container -->
+
+<script>
+  // ─── State ───────────────────────────────────────────────────────────────
+  let mode = 'solo';   // 'solo' | 'couple'
+  let items = [];      // { id, name, price, split }
+  let nextId = 1;
+
+  // ─── Helpers ─────────────────────────────────────────────────────────────
+  const fmt = n => '฿' + n.toLocaleString('th-TH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const val = id => parseFloat(document.getElementById(id).value) || 0;
+  const el  = id => document.getElementById(id);
+
+  function maxPurchase(project, cash) {
+    if (project <= 0 && cash <= 0) return 0;
+    // project = total * 0.60  → total = project / 0.60
+    // cash    = total * 0.40  → total = cash / 0.40
+    const fromProject = project / 0.60;
+    const fromCash    = cash    / 0.40;
+    return Math.min(fromProject, fromCash);
+  }
+
+  // ─── Mode Switch ─────────────────────────────────────────────────────────
+  function setMode(m) {
+    mode = m;
+    el('btnSolo').className   = 'mode-btn' + (m === 'solo'   ? ' active-solo'   : '');
+    el('btnCouple').className = 'mode-btn' + (m === 'couple' ? ' active-couple' : '');
+    el('partnerBlock').classList.toggle('hidden', m === 'solo');
+    el('soloDash').classList.toggle('hidden', m !== 'solo');
+    el('coupleDash').classList.toggle('hidden', m !== 'couple');
+    el('splitType').classList.toggle('hidden', m === 'solo');
+    el('modeBadge').textContent = m === 'solo' ? '👤 โหมดคนเดียว' : '👥 โหมดคู่รัก';
+    recalculate();
+    renderItems();
+  }
+
+  // ─── Expense Allocation ──────────────────────────────────────────────────
+  // Returns { myProject, myCash, partnerProject, partnerCash }
+  function allocate(price, split) {
+    const project60 = price * 0.60;
+    const cash40    = price * 0.40;
+    if (mode === 'solo') {
+      return { myProject: project60, myCash: cash40, partnerProject: 0, partnerCash: 0 };
+    }
+    if (split === 'me') {
+      return { myProject: project60, myCash: cash40, partnerProject: 0, partnerCash: 0 };
+    }
+    if (split === 'partner') {
+      return { myProject: 0, myCash: 0, partnerProject: project60, partnerCash: cash40 };
+    }
+    // 50/50
+    return {
+      myProject: project60 / 2, myCash: cash40 / 2,
+      partnerProject: project60 / 2, partnerCash: cash40 / 2
+    };
+  }
+
+  // ─── Recalculate Dashboard ───────────────────────────────────────────────
+  function recalculate() {
+    const myProjInit      = val('myProject');
+    const myCashInit      = val('myCash');
+    const partnerProjInit = val('partnerProject');
+    const partnerCashInit = val('partnerCash');
+
+    let myProjUsed = 0, myCashUsed = 0, partnerProjUsed = 0, partnerCashUsed = 0;
+    let totalSpent = 0;
+
+    for (const item of items) {
+      const a = allocate(item.price, item.split);
+      myProjUsed      += a.myProject;
+      myCashUsed      += a.myCash;
+      partnerProjUsed += a.partnerProject;
+      partnerCashUsed += a.partnerCash;
+      totalSpent += item.price;
+    }
+
+    const myProjLeft      = myProjInit - myProjUsed;
+    const myCashLeft      = myCashInit - myCashUsed;
+    const partnerProjLeft = partnerProjInit - partnerProjUsed;
+    const partnerCashLeft = partnerCashInit - partnerCashUsed;
+
+    if (mode === 'solo') {
+      el('soloProjectLeft').textContent = fmt(myProjLeft);
+      el('soloCashLeft').textContent    = fmt(myCashLeft);
+      el('soloTotalSpent').textContent  = fmt(totalSpent);
+      const mp = maxPurchase(myProjLeft, myCashLeft);
+      el('soloMaxPurchase').textContent = fmt(mp);
+
+      const warn = el('soloWarning');
+      if (myProjLeft < 0 || myCashLeft < 0) {
+        warn.classList.remove('hidden');
+        el('soloWarningText').textContent =
+          (myProjLeft < 0 ? `ยอดโครงการติดลบ ${fmt(Math.abs(myProjLeft))} ` : '') +
+          (myCashLeft < 0 ? `เงินสดติดลบ ${fmt(Math.abs(myCashLeft))}` : '');
+      } else {
+        warn.classList.add('hidden');
+      }
+    } else {
+      el('myProjectLeft').textContent      = fmt(myProjLeft);
+      el('myCashLeft').textContent         = fmt(myCashLeft);
+      el('partnerProjectLeft').textContent = fmt(partnerProjLeft);
+      el('partnerCashLeft').textContent    = fmt(partnerCashLeft);
+      el('coupleTotalSpent').textContent   = fmt(totalSpent);
+      el('myMaxPurchase').textContent      = fmt(maxPurchase(myProjLeft, myCashLeft));
+      el('partnerMaxPurchase').textContent = fmt(maxPurchase(partnerProjLeft, partnerCashLeft));
+    }
+  }
+
+  // ─── Render Items ────────────────────────────────────────────────────────
+  const splitLabel = { half: '💑 หาร 50/50', me: '💙 ฉันเต็ม', partner: '🌸 แฟนเต็ม' };
+  const icons = ['🛒','🍜','🥤','🍱','🛍️','💊','🧴','🎁','🍔','🍕','☕','🍰'];
+  function randIcon(id) { return icons[id % icons.length]; }
+
+  function renderItems() {
+    const list = el('expenseList');
+    const totDiv = el('expenseTotal');
+    if (items.length === 0) {
+      list.innerHTML = '<div class="empty-state">🛍️ ยังไม่มีรายการ<br>เพิ่มสินค้าด้านบนได้เลย</div>';
+      totDiv.classList.add('hidden');
+      return;
+    }
+    totDiv.classList.remove('hidden');
+    const total = items.reduce((s, i) => s + i.price, 0);
+    el('totalAmountDisplay').textContent = fmt(total);
+
+    list.innerHTML = items.map(item => {
+      const a = allocate(item.price, item.split);
+      let meta = `โครงการ ${fmt(mode==='solo'?a.myProject:a.myProject+a.partnerProject)} · เงินสด ${fmt(mode==='solo'?a.myCash:a.myCash+a.partnerCash)}`;
+      let splitBadge = mode === 'couple' ? `<span class="badge badge-rose">${splitLabel[item.split]}</span>` : '';
+      return `
+        <div class="expense-item">
+          <span class="ei-icon">${randIcon(item.id)}</span>
+          <div class="ei-info">
+            <div class="ei-name">${item.name}</div>
+            <div class="ei-meta">${meta} ${splitBadge}</div>
+          </div>
+          <div style="text-align:right; flex-shrink:0;">
+            <div class="ei-price">${fmt(item.price)}</div>
+          </div>
+          <button class="btn-del" onclick="removeItem(${item.id})">✕</button>
+        </div>`;
+    }).join('');
+  }
+
+  // ─── Add / Remove ────────────────────────────────────────────────────────
+  function addItem() {
+    const name  = el('itemName').value.trim();
+    const price = parseFloat(el('itemPrice').value);
+    const split = el('splitType').value || 'me';
+    if (!name)  { el('itemName').focus(); return; }
+    if (!price || price <= 0) { el('itemPrice').focus(); return; }
+    items.push({ id: nextId++, name, price, split });
+    el('itemName').value  = '';
+    el('itemPrice').value = '';
+    el('itemName').focus();
+    recalculate();
+    renderItems();
+  }
+
+  function removeItem(id) {
+    items = items.filter(i => i.id !== id);
+    recalculate();
+    renderItems();
+  }
+
+  function resetAll() {
+    if (!confirm('ล้างข้อมูลทั้งหมดและเริ่มต้นใหม่?')) return;
+    items = [];
+    ['myProject','myCash','partnerProject','partnerCash'].forEach(id => el(id).value = '');
+    recalculate();
+    renderItems();
+  }
+
+  // ─── Enter key shortcut ──────────────────────────────────────────────────
+  el('itemPrice').addEventListener('keydown', e => { if (e.key === 'Enter') addItem(); });
+  el('itemName').addEventListener('keydown',  e => { if (e.key === 'Enter') el('itemPrice').focus(); });
+
+  // ─── Init ────────────────────────────────────────────────────────────────
+  recalculate();
+</script>
+</body>
+</html>
